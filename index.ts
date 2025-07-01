@@ -1,6 +1,11 @@
 // Main TypeScript file for the narrative visualization
 // This will handle scene navigation and state management
 
+// Declare D3 libraries loaded via CDN
+declare var d3: any;
+declare var d3Annotation: any;
+declare var topojson: any;
+
 interface SceneState {
     currentScene: string;
     parameters: { [key: string]: any };
