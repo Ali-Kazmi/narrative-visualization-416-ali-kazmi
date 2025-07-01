@@ -119,13 +119,9 @@
         </div>
     </div>
     
-    <!-- D3.js Library -->
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <!-- D3 Annotation Library -->
+    <!-- D3 Annotation Library (only this one needs CDN since it doesn't have npm ES modules) -->
     <script src="https://cdn.jsdelivr.net/npm/d3-svg-annotation@2/d3-annotation.min.js"></script>
-    <!-- TopoJSON Client Library -->
-    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
     
-    <script src="index.js"></script>
+    <script type="module" src="index.js"></script>
 </body>
 </html>
