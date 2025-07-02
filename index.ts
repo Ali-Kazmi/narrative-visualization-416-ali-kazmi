@@ -23,6 +23,8 @@ class NarrativeVisualization {
         };
         this.scenes = ['scene1', 'scene2', 'scene3'];
         this.initializeEventListeners();
+        // Initialize navigation controls after DOM is ready
+        setTimeout(() => this.updateNavigationControls(), 0);
     }
 
     private initializeEventListeners(): void {
@@ -37,6 +39,22 @@ class NarrativeVisualization {
                 }
             });
         });
+
+        // Add event listeners for Next/Previous buttons
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                this.navigateToPreviousScene();
+            });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                this.navigateToNextScene();
+            });
+        }
     }
 
     private navigateToScene(sceneId: string): void {
@@ -67,8 +85,49 @@ class NarrativeVisualization {
         // Update state
         this.state.currentScene = sceneId;
 
+        // Update navigation controls
+        this.updateNavigationControls();
+
         // Trigger scene-specific setup
         this.setupScene(sceneId);
+    }
+
+    private navigateToPreviousScene(): void {
+        const currentIndex = this.scenes.indexOf(this.state.currentScene);
+        if (currentIndex > 0) {
+            const previousScene = this.scenes[currentIndex - 1];
+            this.navigateToScene(previousScene);
+        }
+    }
+
+    private navigateToNextScene(): void {
+        const currentIndex = this.scenes.indexOf(this.state.currentScene);
+        if (currentIndex < this.scenes.length - 1) {
+            const nextScene = this.scenes[currentIndex + 1];
+            this.navigateToScene(nextScene);
+        }
+    }
+
+    private updateNavigationControls(): void {
+        const currentIndex = this.scenes.indexOf(this.state.currentScene);
+        const prevBtn = document.getElementById('prevBtn') as HTMLButtonElement;
+        const nextBtn = document.getElementById('nextBtn') as HTMLButtonElement;
+        const sceneIndicator = document.querySelector('.scene-indicator');
+
+        // Update Previous button
+        if (prevBtn) {
+            prevBtn.disabled = currentIndex === 0;
+        }
+
+        // Update Next button
+        if (nextBtn) {
+            nextBtn.disabled = currentIndex === this.scenes.length - 1;
+        }
+
+        // Update scene indicator
+        if (sceneIndicator) {
+            sceneIndicator.textContent = `Scene ${currentIndex + 1} of ${this.scenes.length}`;
+        }
     }
 
     private setupScene(sceneId: string): void {
