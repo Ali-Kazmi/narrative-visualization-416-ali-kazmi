@@ -528,14 +528,183 @@ class NarrativeVisualization {
     }
 
     setupScene2() {
-        // Placeholder for Scene 2
-        console.log('Scene 2 setup - Range vs Performance (Not implemented yet)');
+        // Scene 2: Range vs Performance Trade-offs
+        console.log('Scene 2 setup - Range vs Performance');
+        this.updateParameters({ scene: 'range_vs_performance', step: 2 });
+        
         const container = document.getElementById('scene2-viz');
-        container.innerHTML = `
-            <div style="display: flex; justify-content: center; align-items: center; height: 400px; font-size: 1.2em; color: #666;">
-                Scene 2 visualization coming soon...
-            </div>
+        container.innerHTML = '';
+
+        // Create SVG element
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('width', '100%');
+        svg.setAttribute('height', '100%');
+        svg.setAttribute('viewBox', '0 0 800 450');
+        container.appendChild(svg);
+
+        // Filter data for scatter plot - only cars with good data
+        const scatterData = this.state.data
+            .filter(d => d.range > 200 && d.acceleration > 0 && d.acceleration < 10)
+            .slice(0, 50); // Keep it simple with 50 cars
+
+        // Simple scales - basic math
+        const margin = { top: 50, right: 80, bottom: 80, left: 80 };
+        const width = 800 - margin.left - margin.right;
+        const height = 450 - margin.top - margin.bottom;
+
+        const maxRange = Math.max(...scatterData.map(d => d.range));
+        const maxAccel = Math.max(...scatterData.map(d => d.acceleration));
+        
+        // Basic scaling functions
+        const xScale = (range) => (range / maxRange) * width;
+        const yScale = (accel) => height - (accel / maxAccel) * height;
+
+        // Create main group
+        const mainGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        mainGroup.setAttribute('transform', `translate(${margin.left}, ${margin.top})`);
+        svg.appendChild(mainGroup);
+
+        // Simple tooltip
+        const tooltip = document.createElement('div');
+        tooltip.style.cssText = `
+            position: absolute;
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 1000;
         `;
+        container.appendChild(tooltip);
+
+        // Draw axes first (simple lines)
+        const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        xAxis.setAttribute('x1', '0');
+        xAxis.setAttribute('y1', height);
+        xAxis.setAttribute('x2', width);
+        xAxis.setAttribute('y2', height);
+        xAxis.setAttribute('stroke', '#333');
+        xAxis.setAttribute('stroke-width', '2');
+        mainGroup.appendChild(xAxis);
+
+        const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        yAxis.setAttribute('x1', '0');
+        yAxis.setAttribute('y1', '0');
+        yAxis.setAttribute('x2', '0');
+        yAxis.setAttribute('y2', height);
+        yAxis.setAttribute('stroke', '#333');
+        yAxis.setAttribute('stroke-width', '2');
+        mainGroup.appendChild(yAxis);
+
+        // Add axis labels (simple)
+        const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        xLabel.setAttribute('x', width / 2);
+        xLabel.setAttribute('y', height + 40);
+        xLabel.setAttribute('text-anchor', 'middle');
+        xLabel.setAttribute('font-size', '14px');
+        xLabel.setAttribute('fill', '#333');
+        xLabel.textContent = 'Range (km)';
+        mainGroup.appendChild(xLabel);
+
+        const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        yLabel.setAttribute('x', '-40');
+        yLabel.setAttribute('y', height / 2);
+        yLabel.setAttribute('text-anchor', 'middle');
+        yLabel.setAttribute('font-size', '14px');
+        yLabel.setAttribute('fill', '#333');
+        yLabel.setAttribute('transform', `rotate(-90, -40, ${height / 2})`);
+        yLabel.textContent = 'Acceleration (0-100 km/h)';
+        mainGroup.appendChild(yLabel);
+
+        // Add title
+        const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        title.setAttribute('x', width / 2);
+        title.setAttribute('y', -20);
+        title.setAttribute('text-anchor', 'middle');
+        title.setAttribute('font-size', '16px');
+        title.setAttribute('font-weight', 'bold');
+        title.setAttribute('fill', '#333');
+        title.textContent = 'Range vs Acceleration Performance';
+        mainGroup.appendChild(title);
+
+        // Draw scatter points
+        scatterData.forEach((d, i) => {
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', xScale(d.range));
+            circle.setAttribute('cy', yScale(d.acceleration));
+            circle.setAttribute('r', '0');
+            circle.setAttribute('fill', '#3498db');
+            circle.setAttribute('opacity', '0.7');
+            circle.setAttribute('stroke', '#2980b9');
+            circle.setAttribute('stroke-width', '1');
+            circle.style.cursor = 'pointer';
+
+            // Simple hover effects
+            circle.addEventListener('mouseenter', (event) => {
+                circle.setAttribute('r', '8');
+                circle.setAttribute('opacity', '1');
+                
+                tooltip.innerHTML = `
+                    <div><strong>${d.brand} ${d.model}</strong></div>
+                    <div>Range: ${d.range} km</div>
+                    <div>0-100: ${d.acceleration}s</div>
+                `;
+                tooltip.style.opacity = '1';
+                tooltip.style.left = (event.pageX + 10) + 'px';
+                tooltip.style.top = (event.pageY - 10) + 'px';
+            });
+
+            circle.addEventListener('mouseleave', () => {
+                circle.setAttribute('r', '5');
+                circle.setAttribute('opacity', '0.7');
+                tooltip.style.opacity = '0';
+            });
+
+            circle.addEventListener('mousemove', (event) => {
+                tooltip.style.left = (event.pageX + 10) + 'px';
+                tooltip.style.top = (event.pageY - 10) + 'px';
+            });
+
+            mainGroup.appendChild(circle);
+
+            // Simple animation - just grow the circles
+            setTimeout(() => {
+                circle.style.transition = 'r 0.5s ease';
+                circle.setAttribute('r', '5');
+            }, i * 20);
+        });
+
+        // Add a simple trend line annotation
+        const trendLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        trendLine.setAttribute('x1', '50');
+        trendLine.setAttribute('y1', height - 50);
+        trendLine.setAttribute('x2', width - 50);
+        trendLine.setAttribute('y2', '50');
+        trendLine.setAttribute('stroke', '#e74c3c');
+        trendLine.setAttribute('stroke-width', '2');
+        trendLine.setAttribute('stroke-dasharray', '5,5');
+        trendLine.setAttribute('opacity', '0.6');
+        mainGroup.appendChild(trendLine);
+
+        // Simple annotation text
+        const annotation = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        annotation.setAttribute('x', width - 100);
+        annotation.setAttribute('y', '80');
+        annotation.setAttribute('font-size', '12px');
+        annotation.setAttribute('fill', '#e74c3c');
+        annotation.setAttribute('font-weight', 'bold');
+        annotation.textContent = 'Better performance';
+        mainGroup.appendChild(annotation);
+
+        const annotation2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        annotation2.setAttribute('x', width - 100);
+        annotation2.setAttribute('y', '95');
+        annotation2.setAttribute('font-size', '11px');
+        annotation2.setAttribute('fill', '#666');
+        annotation2.textContent = 'usually means less range';
+        mainGroup.appendChild(annotation2);
     }
 
     setupScene3() {
