@@ -759,7 +759,7 @@ class NarrativeVisualization {
             z-index: 1000;
             max-width: 250px;
         `;
-        container.appendChild(tooltip);
+        document.body.appendChild(tooltip);
 
         // Add title
         const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
