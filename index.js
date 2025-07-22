@@ -398,7 +398,7 @@ class NarrativeVisualization {
         title.setAttribute('font-size', '18px');
         title.setAttribute('font-weight', 'bold');
         title.setAttribute('fill', '#2c3e50');
-        title.textContent = 'Top 12 Fastest Accelerating Electric Vehicles';
+        title.textContent = 'Top 12 Fastest Accelerating Electric Cars';
         mainGroup.appendChild(title);
 
         // Add legend
