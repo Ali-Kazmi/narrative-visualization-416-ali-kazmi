@@ -923,23 +923,23 @@ class NarrativeVisualization {
         const badge = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         badge.setAttribute('transform', `translate(${width - 120}, 10)`);
         
-        const badgeBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        badgeBg.setAttribute('width', '110');
-        badgeBg.setAttribute('height', '30');
-        badgeBg.setAttribute('fill', '#e74c3c');
-        badgeBg.setAttribute('rx', '15');
-        badgeBg.setAttribute('opacity', '0.9');
-        badge.appendChild(badgeBg);
+        // const badgeBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        // badgeBg.setAttribute('width', '110');
+        // badgeBg.setAttribute('height', '30');
+        // badgeBg.setAttribute('fill', '#e74c3c');
+        // badgeBg.setAttribute('rx', '15');
+        // badgeBg.setAttribute('opacity', '0.9');
+        // badge.appendChild(badgeBg);
 
-        const badgeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        badgeText.setAttribute('x', '55');
-        badgeText.setAttribute('y', '20');
-        badgeText.setAttribute('text-anchor', 'middle');
-        badgeText.setAttribute('font-size', '11px');
-        badgeText.setAttribute('font-weight', 'bold');
-        badgeText.setAttribute('fill', 'white');
-        badgeText.textContent = 'ELITE PERFORMANCE';
-        badge.appendChild(badgeText);
+        // const badgeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        // badgeText.setAttribute('x', '55');
+        // badgeText.setAttribute('y', '20');
+        // badgeText.setAttribute('text-anchor', 'middle');
+        // badgeText.setAttribute('font-size', '11px');
+        // badgeText.setAttribute('font-weight', 'bold');
+        // badgeText.setAttribute('fill', 'white');
+        // badgeText.textContent = 'ELITE PERFORMANCE';
+        // badge.appendChild(badgeText);
 
         mainGroup.appendChild(badge);
     }
