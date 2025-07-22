@@ -299,7 +299,7 @@ class NarrativeVisualization {
             z-index: 1000;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         `;
-        container.appendChild(tooltip);
+        document.body.appendChild(tooltip);
 
         // Draw bars with animation
         performanceData.forEach((d, i) => {
@@ -564,20 +564,22 @@ class NarrativeVisualization {
         mainGroup.setAttribute('transform', `translate(${margin.left}, ${margin.top})`);
         svg.appendChild(mainGroup);
 
-        // Simple tooltip
+        // Enhanced tooltip
         const tooltip = document.createElement('div');
         tooltip.style.cssText = `
             position: absolute;
-            background-color: rgba(0,0,0,0.8);
+            background-color: rgba(0,0,0,0.9);
             color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: 10px 14px;
+            border-radius: 8px;
             font-size: 12px;
             pointer-events: none;
             opacity: 0;
             z-index: 1000;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         `;
-        container.appendChild(tooltip);
+        document.body.appendChild(tooltip);
 
         // Draw axes first (simple lines)
         const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -922,24 +924,6 @@ class NarrativeVisualization {
         // Add performance badge
         const badge = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         badge.setAttribute('transform', `translate(${width - 120}, 10)`);
-        
-        // const badgeBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        // badgeBg.setAttribute('width', '110');
-        // badgeBg.setAttribute('height', '30');
-        // badgeBg.setAttribute('fill', '#e74c3c');
-        // badgeBg.setAttribute('rx', '15');
-        // badgeBg.setAttribute('opacity', '0.9');
-        // badge.appendChild(badgeBg);
-
-        // const badgeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        // badgeText.setAttribute('x', '55');
-        // badgeText.setAttribute('y', '20');
-        // badgeText.setAttribute('text-anchor', 'middle');
-        // badgeText.setAttribute('font-size', '11px');
-        // badgeText.setAttribute('font-weight', 'bold');
-        // badgeText.setAttribute('fill', 'white');
-        // badgeText.textContent = 'ELITE PERFORMANCE';
-        // badge.appendChild(badgeText);
 
         mainGroup.appendChild(badge);
     }
