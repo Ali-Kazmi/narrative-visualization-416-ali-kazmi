@@ -708,14 +708,240 @@ class NarrativeVisualization {
     }
 
     setupScene3() {
-        // Placeholder for Scene 3
-        console.log('Scene 3 setup - The Future is Fast (Not implemented yet)');
+        // Scene 3: The Future is Fast - Top Performance EVs
+        console.log('Scene 3 setup - The Future is Fast');
+        this.updateParameters({ scene: 'future_is_fast', step: 3 });
+        
         const container = document.getElementById('scene3-viz');
-        container.innerHTML = `
-            <div style="display: flex; justify-content: center; align-items: center; height: 400px; font-size: 1.2em; color: #666;">
-                Scene 3 visualization coming soon...
-            </div>
+        container.innerHTML = '';
+
+        // Create SVG element
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('width', '100%');
+        svg.setAttribute('height', '100%');
+        svg.setAttribute('viewBox', '0 0 800 450');
+        container.appendChild(svg);
+
+        // Filter for elite performance cars - top performers across multiple metrics
+        const eliteData = this.state.data
+            .filter(d => 
+                d.acceleration < 4 && 
+                d.topSpeed > 200 && 
+                d.range > 300 &&
+                d.torque > 500
+            )
+            .sort((a, b) => a.acceleration - b.acceleration) // Sort by acceleration
+            .slice(0, 8); // Top 8 elite EVs
+
+        // Simple layout
+        const margin = { top: 60, right: 60, bottom: 60, left: 60 };
+        const width = 800 - margin.left - margin.right;
+        const height = 450 - margin.top - margin.bottom;
+
+        // Create main group
+        const mainGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        mainGroup.setAttribute('transform', `translate(${margin.left}, ${margin.top})`);
+        svg.appendChild(mainGroup);
+
+        // Create tooltip
+        const tooltip = document.createElement('div');
+        tooltip.style.cssText = `
+            position: absolute;
+            background-color: rgba(0,0,0,0.9);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 1000;
+            max-width: 250px;
         `;
+        container.appendChild(tooltip);
+
+        // Add title
+        const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        title.setAttribute('x', width / 2);
+        title.setAttribute('y', -30);
+        title.setAttribute('text-anchor', 'middle');
+        title.setAttribute('font-size', '18px');
+        title.setAttribute('font-weight', 'bold');
+        title.setAttribute('fill', '#2c3e50');
+        title.textContent = 'Elite Performance Electric Vehicles';
+        mainGroup.appendChild(title);
+
+        // Create a grid layout for the cars
+        const cols = 4;
+        const rows = 2;
+        const cardWidth = width / cols - 10;
+        const cardHeight = height / rows - 20;
+
+        eliteData.forEach((d, i) => {
+            const col = i % cols;
+            const row = Math.floor(i / cols);
+            const x = col * (cardWidth + 10);
+            const y = row * (cardHeight + 20);
+
+            // Create card background
+            const cardBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            cardBg.setAttribute('x', x);
+            cardBg.setAttribute('y', y);
+            cardBg.setAttribute('width', cardWidth);
+            cardBg.setAttribute('height', cardHeight);
+            cardBg.setAttribute('fill', '#f8f9fa');
+            cardBg.setAttribute('stroke', '#e9ecef');
+            cardBg.setAttribute('stroke-width', '2');
+            cardBg.setAttribute('rx', '8');
+            cardBg.style.cursor = 'pointer';
+
+            // Add hover effect to card
+            cardBg.addEventListener('mouseenter', (event) => {
+                cardBg.setAttribute('fill', '#e3f2fd');
+                cardBg.setAttribute('stroke', '#2196f3');
+                
+                tooltip.innerHTML = `
+                    <div style="font-weight: bold; margin-bottom: 8px; color: #4ecdc4;">${d.brand} ${d.model}</div>
+                    <div><strong>🏁 Performance:</strong></div>
+                    <div style="margin-left: 10px;">• 0-100 km/h: ${d.acceleration}s</div>
+                    <div style="margin-left: 10px;">• Top Speed: ${d.topSpeed} km/h</div>
+                    <div style="margin-left: 10px;">• Torque: ${d.torque} Nm</div>
+                    <div style="margin-left: 10px;">• Range: ${d.range} km</div>
+                    <div style="margin-top: 8px;"><strong>🔋 Tech:</strong></div>
+                    <div style="margin-left: 10px;">• Battery: ${d.batteryCapacity || 'N/A'} kWh</div>
+                    <div style="margin-left: 10px;">• Efficiency: ${d.efficiency || 'N/A'} Wh/km</div>
+                    <div style="margin-left: 10px;">• Segment: ${d.segment}</div>
+                `;
+                tooltip.style.opacity = '1';
+                tooltip.style.left = (event.pageX + 15) + 'px';
+                tooltip.style.top = (event.pageY - 10) + 'px';
+            });
+
+            cardBg.addEventListener('mouseleave', () => {
+                cardBg.setAttribute('fill', '#f8f9fa');
+                cardBg.setAttribute('stroke', '#e9ecef');
+                tooltip.style.opacity = '0';
+            });
+
+            cardBg.addEventListener('mousemove', (event) => {
+                tooltip.style.left = (event.pageX + 15) + 'px';
+                tooltip.style.top = (event.pageY - 10) + 'px';
+            });
+
+            mainGroup.appendChild(cardBg);
+
+            // Add car brand/model text
+            const carName = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            carName.setAttribute('x', x + cardWidth / 2);
+            carName.setAttribute('y', y + 25);
+            carName.setAttribute('text-anchor', 'middle');
+            carName.setAttribute('font-size', '13px');
+            carName.setAttribute('font-weight', 'bold');
+            carName.setAttribute('fill', '#2c3e50');
+            carName.textContent = this.truncateText(`${d.brand}`, 12);
+            mainGroup.appendChild(carName);
+
+            const modelName = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            modelName.setAttribute('x', x + cardWidth / 2);
+            modelName.setAttribute('y', y + 40);
+            modelName.setAttribute('text-anchor', 'middle');
+            modelName.setAttribute('font-size', '11px');
+            modelName.setAttribute('fill', '#666');
+            modelName.textContent = this.truncateText(d.model, 15);
+            mainGroup.appendChild(modelName);
+
+            // Add key metrics
+            const metrics = [
+                { label: '0-100', value: `${d.acceleration}s`, color: '#e74c3c' },
+                { label: 'Speed', value: `${d.topSpeed}km/h`, color: '#f39c12' },
+                { label: 'Range', value: `${d.range}km`, color: '#27ae60' },
+                { label: 'Torque', value: `${d.torque}Nm`, color: '#8e44ad' }
+            ];
+
+            metrics.forEach((metric, idx) => {
+                const metricY = y + 60 + (idx * 25);
+                
+                // Metric label
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.setAttribute('x', x + 10);
+                label.setAttribute('y', metricY);
+                label.setAttribute('font-size', '10px');
+                label.setAttribute('fill', '#666');
+                label.textContent = metric.label + ':';
+                mainGroup.appendChild(label);
+
+                // Metric value
+                const value = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                value.setAttribute('x', x + cardWidth - 10);
+                value.setAttribute('y', metricY);
+                value.setAttribute('text-anchor', 'end');
+                value.setAttribute('font-size', '11px');
+                value.setAttribute('font-weight', 'bold');
+                value.setAttribute('fill', metric.color);
+                value.textContent = metric.value;
+                mainGroup.appendChild(value);
+            });
+
+            // Add rank indicator
+            const rankCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            rankCircle.setAttribute('cx', x + cardWidth - 15);
+            rankCircle.setAttribute('cy', y + 15);
+            rankCircle.setAttribute('r', '12');
+            rankCircle.setAttribute('fill', '#3498db');
+            rankCircle.setAttribute('opacity', '0.8');
+            mainGroup.appendChild(rankCircle);
+
+            const rankText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            rankText.setAttribute('x', x + cardWidth - 15);
+            rankText.setAttribute('y', y + 15);
+            rankText.setAttribute('dy', '0.35em');
+            rankText.setAttribute('text-anchor', 'middle');
+            rankText.setAttribute('font-size', '10px');
+            rankText.setAttribute('font-weight', 'bold');
+            rankText.setAttribute('fill', 'white');
+            rankText.textContent = `#${i + 1}`;
+            mainGroup.appendChild(rankText);
+
+            // Simple animation - fade in cards
+            setTimeout(() => {
+                cardBg.style.transition = 'opacity 0.8s ease';
+                cardBg.setAttribute('opacity', '1');
+            }, i * 150);
+        });
+
+        // Add simple annotation
+        const annotation = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        annotation.setAttribute('x', width / 2);
+        annotation.setAttribute('y', height + 40);
+        annotation.setAttribute('text-anchor', 'middle');
+        annotation.setAttribute('font-size', '12px');
+        annotation.setAttribute('fill', '#666');
+        annotation.setAttribute('font-style', 'italic');
+        annotation.textContent = 'Hover over each vehicle to see detailed specifications';
+        mainGroup.appendChild(annotation);
+
+        // Add performance badge
+        const badge = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        badge.setAttribute('transform', `translate(${width - 120}, 10)`);
+        
+        const badgeBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        badgeBg.setAttribute('width', '110');
+        badgeBg.setAttribute('height', '30');
+        badgeBg.setAttribute('fill', '#e74c3c');
+        badgeBg.setAttribute('rx', '15');
+        badgeBg.setAttribute('opacity', '0.9');
+        badge.appendChild(badgeBg);
+
+        const badgeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        badgeText.setAttribute('x', '55');
+        badgeText.setAttribute('y', '20');
+        badgeText.setAttribute('text-anchor', 'middle');
+        badgeText.setAttribute('font-size', '11px');
+        badgeText.setAttribute('font-weight', 'bold');
+        badgeText.setAttribute('fill', 'white');
+        badgeText.textContent = 'ELITE PERFORMANCE';
+        badge.appendChild(badgeText);
+
+        mainGroup.appendChild(badge);
     }
 
     // Helper function to truncate text
