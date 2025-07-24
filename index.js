@@ -243,11 +243,11 @@ class NarrativeVisualization {
         const container = document.getElementById('scene1-viz');
         container.innerHTML = '';
 
-        // Create SVG element
+        // Create SVG element with reduced height to account for the image
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         svg.setAttribute('width', '100%');
-        svg.setAttribute('height', '100%');
-        svg.setAttribute('viewBox', '0 0 800 450');
+        svg.setAttribute('height', '320px'); // Reduced height to fit with image
+        svg.setAttribute('viewBox', '0 0 800 320');
         container.appendChild(svg);
 
         // Filter and sort data for top performers
