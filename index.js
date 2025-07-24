@@ -718,18 +718,18 @@ class NarrativeVisualization {
         container.innerHTML = '';
 
         // Add large Porsche image at the top of the container (outside SVG)
-        const porscheImg = document.createElement('img');
-        porscheImg.src = 'porsche.jpeg';
-        porscheImg.style.cssText = `
-            width: 400px;
-            height: 150px;
-            object-fit: cover;
-            display: block;
-            margin: 0 auto 20px auto;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-        `;
-        container.appendChild(porscheImg);
+        // const porscheImg = document.createElement('img');
+        // porscheImg.src = 'porsche.jpeg';
+        // porscheImg.style.cssText = `
+        //     width: 400px;
+        //     height: 150px;
+        //     object-fit: cover;
+        //     display: block;
+        //     margin: 0 auto 20px auto;
+        //     border-radius: 12px;
+        //     box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        // `;
+        // container.appendChild(porscheImg);
 
         // Create SVG element
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
